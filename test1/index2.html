@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+    <style type="text/css">
+        .link {
+            stroke: #000;
+            stroke-width: 1.5px;
+        }
+
+        .node {
+            cursor: move;
+            fill: #ccc;
+            stroke: #000;
+            stroke-width: 1.5px;
+        }
+    </style>
+</head>
+<body>
+<div id='container'></div>
+<svg id="myCanvas" xmlns="http://www.w3.org/2000/svg" version="1.1">
+
+
+    <defs>
+        <marker id="markerArrow" markerWidth="8" markerHeight="8" refx="2" refy="5" orient="auto">
+            <path d="M2,2 L2,8 L8,5 L2,2" style="fill: #000000;" />
+        </marker>
+    </defs>
+    <path d="M50,50 L250,50" stroke-width="2" style="fill: #61a8e0;" marker-start="url(#markerArrow)" marker-end="url(#markerArrow)"/>
+</svg>
+<script type="text/javascript">
+    var graph ={
+        "nodes": [
+            {"x": 400, "y": 400, ip: '192.168.1.102'},
+            {"x": 600, "y": 400, ip: '192.168.1.103'},
+            {"x": 500, "y": 600, ip: '192.168.1.104'}
+        ],
+        "links": [
+            {"source":  0, "target":  1},
+            {"source":  0, "target":  2},
+            {"source":  1, "target":  2}
+        ]
+    };
+    var width = 960,
+            height = 500;
+
+    var force = d3.forceSimulation()
+            .force("charge", d3.forceManyBody())
+            .force("center", d3.forceCenter(width / 2,height / 2))
+            .on("tick", tick);
+
+    var svg = d3.select("body").append("svg")
+            .attr("width", width)
+            .attr("height", height);
+
+    svg.append('svg:defs').append('svg:marker')
+            .attr('id', 'end-arrow')
+            .attr('viewBox', '0 -5 10 10')
+            .attr('refX', 6)
+            .attr('markerWidth', 3)
+            .attr('markerHeight', 3)
+            .attr('orient', 'auto')
+            .append('svg:path')
+            .attr('d', 'M0,-5L10,0L0,5')
+            .attr('fill', '#000');
+
+    svg.append('svg:defs').append('svg:marker')
+            .attr('id', 'start-arrow')
+            .attr('viewBox', '0 -5 10 10')
+            .attr('refX', 4)
+            .attr('markerWidth', 3)
+            .attr('markerHeight', 3)
+            .attr('orient', 'auto')
+            .append('svg:path')
+            .attr('d', 'M10,-5L0,0L10,5')
+            .attr('fill', '#000');
+
+    var link = svg.selectAll(".link"),
+            node = svg.selectAll(".node");
+
+    force.nodes(graph.nodes).force("link",d3.forceLink(graph.links));
+
+    link = link.data(graph.links)
+            .enter().append("line")
+            .attr("class", "link");
+    console.log(graph.nodes);
+
+    node = node.data(graph.nodes)
+            .enter().append("svg:image")
+            .attr("class", "circle")
+            .attr("xlink:href", "./img/router.png")
+            .attr("width", "40px")
+            .attr("height", "40px")
+            .on("dblclick", dblclick)
+            .call(d3.drag()
+                    .on("start", dragstart)
+                    .on("drag", dragged)
+                    .on("end", dragended));
+
+    node.append("svg:title")
+            .text(function(d) {
+                return 'IP: ' + d.ip + '\nvalue: 123';
+            });
+
+    var circle1 = svg.append("circle")
+            .attr("cx", 400)
+            .attr("cy", 400)
+            .attr("r", 2)
+            .style("fill","green");
+
+    //在1秒（1000毫秒）内将圆心坐标由100变为300
+    circle1.transition()
+            .ease("bounce")
+            .duration(1000)
+            .attr("cx", 600);
+
+
+    function tick() {
+        link.attr("x1", function(d) { return d.source.x; })
+                .attr("y1", function(d) { return d.source.y; })
+                .attr("x2", function(d) { return d.target.x; })
+                .attr("y2", function(d) { return d.target.y; });
+
+        node.attr("x", function(d) {
+            d.fx = d.x;
+            return d.x - 20;
+        }).attr("y", function(d) {
+            d.fy = d.y;
+            return d.y - 20;
+        });
+    }
+
+    function dblclick(d) {
+        d3.select(this).classed("fixed", d.fixed = false);
+        console.log("dblclick"+d.fixed);
+    }
+
+    function dragstart(d) {
+        if(!d3.event.active){
+            force.alphaTarget(.1).restart();
+        }
+        d.fx = d.x;
+        d.fy = d.y;
+    }
+    function dragged(d){
+        d.fx = d3.event.x;
+        d.fy = d3.event.y;
+    }
+    function dragended(d){
+        // force.stop();
+        if(!d3.event.active){
+            force.alphaTarget(0);
+        }
+        // d.fx = null;
+        // d.fy = null;
+    }
+</script>
+</body>
+</html>

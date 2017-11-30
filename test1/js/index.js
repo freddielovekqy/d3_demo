@@ -24,7 +24,7 @@ var graph = {
 var width = 960,
     height = 700;
 
-  
+
 
 var force = d3.forceSimulation()
     // .force("charge", d3.forceManyBody())
@@ -42,13 +42,16 @@ var zoom = d3.zoom()
     .scaleExtent([1 / 2, 8])
     .on("zoom", zoomed)
 svg.call(zoom);
-
 function zoomed() {
-  g.attr("transform", d3.event.transform);
+    console.log(d3.event, d3.zoomTransform(this));
+    g.attr("transform", d3.event.transform);
 }
 
 $('#refresh').on('click', function () {
-    g.attr("transform", 'translate(0,0) scale(1)');
+    // g.attr("transform", 'translate(0,0) scale(1)');
+    // zoom.transform(g, d3.zoomIdentity);
+    // g.call(d3.zoomIdentity.translate(0, 0).scale(1), d3.zoomIdentity);
+    g.call(zoom.transform, d3.zoomIdentity);
 });
 
 var link = g.selectAll(".link"),
@@ -118,7 +121,7 @@ node.append("title")
 
 g.selectAll(".text").data(graph.nodes)
     .enter().append('text')
-    .attr('id', function (d) {return d.ip + '-text';})
+    .attr('id', function (d) { return d.ip + '-text'; })
     .text(function (d) { return d.ip; })
     .attr('dy', '1em');
 
@@ -127,8 +130,8 @@ function tick() {
         .attr("y1", function (d) { return d.source.y; })
         .attr("x2", function (d) { return d.target.x; })
         .attr("y2", function (d) { return d.target.y; })
-        .attr('source', function (d) {return d.source.ip})
-        .attr('target', function (d) {return d.target.ip})
+        .attr('source', function (d) { return d.source.ip })
+        .attr('target', function (d) { return d.target.ip })
         .attr('stroke', function (d) {
             if (d.source.status === 'down' || d.target.status === 'down') {
                 return 'yellow';
@@ -213,7 +216,7 @@ function dragended(d) {
 
 function cleanNodes() {
     var networkNodes = d3.selectAll('.network-node');
-    networkNodes.each(function (d) {d.operation = null;})
+    networkNodes.each(function (d) { d.operation = null; })
 }
 
 $('#container').on('click', function () {

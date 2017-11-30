@@ -1,27 +1,46 @@
 <!DOCTYPE html>
 <html>
-<head lang="en">
+
+<head>
     <meta charset="UTF-8">
-    <title></title>
-    <link rel="stylesheet" href="css/index.css"/>
+    <style type="text/css">
+        #container {
+            width: 960px;
+            height: 700px;
+            background: #f3f3f3;
+            margin: 20px auto;
+            border: 1px solid #ccc;
+            box-shadow: 0 0 1px 1px #ccc;
+            position: relative;
+        }
+
+        .link {
+            stroke-width: 1.5px;
+            cursor: pointer;
+        }
+
+        .network-node {
+            cursor: pointer;
+            fill: #ccc;
+            stroke: #000;
+            stroke-width: 1.5px;
+        }
+
+        #refresh {
+            width: 25px;
+            position: absolute;
+            top: 15px;
+            right: 30px;
+            cursor: pointer;
+        }
+    </style>
 </head>
-<body>
-<div id="contain" class="contain"></div>
+    <div id='container'>
+        <img id="refresh" src="./img/refresh.svg" alt="" title="恢复">
+    </div>
 </body>
-<script src="https://d3js.org/d3.v4.min.js"></script>
-<script>
-    var svg = d3.select("body").append("svg")
-            .attr("width",200)
-            .attr("height",200)
-            .append("g")
-            .attr("transform","translate(40,0)")
-    svg.selectAll("image")
-            .enter()
-            .append("image")
-            .attr("x",200)
-            .attr("y",200)
-            .attr("width",100)
-            .attr("height",100)
-            .attr("xlink:href","./img/router.png");
-</script>
+<script src="js/jquery-3.1.1.min.js"></script>
+<script src="https://d3js.org/d3.v4.js"></script>
+<script src="js/index.js"></script>
+
 </html>
